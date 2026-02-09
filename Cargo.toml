@@ -1,6 +1,6 @@
 [workspace]
 members = [
     "crates/guessing-game",
-    "crates/pick-a-number",
+    "crates/grade-analyzer",
 ]
 resolver = "3"
