@@ -2,5 +2,6 @@
 members = [
     "crates/guessing-game",
     "crates/grade-analyzer",
+    "crates/ownership-lab",
 ]
 resolver = "3"
