@@ -3,5 +3,6 @@ members = [
     "crates/guessing-game",
     "crates/grade-analyzer",
     "crates/ownership-lab",
+    "crates/tuples-and-structs-lab",
 ]
 resolver = "3"
