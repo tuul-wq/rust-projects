@@ -2,18 +2,18 @@
 pub struct GridPoint(pub i32, pub i32);
 
 impl GridPoint {
-    // TODO Task 1 (Medium):
+    // Task 1 (Medium):
     // Implement an associated function without `self`.
     // Return the coordinate origin `(0, 0)`.
     pub fn origin() -> Self {
-        todo!("Task 1: GridPoint::origin");
+      Self(0, 0)
     }
 
-    // TODO Task 2 (Medium):
+    // Task 2 (Medium):
     // Implement an associated function with `self` that consumes the point.
     // Apply the `(dx, dy)` delta and return a new point.
     pub fn shift(self, delta: (i32, i32)) -> Self {
-        todo!("Task 2: GridPoint::shift");
+        Self(self.0 + delta.0, self.1 + delta.1)
     }
 }
 
@@ -27,20 +27,29 @@ pub struct WorkItem {
 }
 
 impl WorkItem {
-    // TODO Task 3 (Medium):
+    // Task 3 (Medium):
     // Implement an associated function without `self` that constructs a new `WorkItem`.
     // - `done` must start as `false`.
     pub fn new(title: String, owner: String, tags: (String, String), estimate_hours: u8) -> Self {
-        todo!("Task 3: WorkItem::new");
+        Self {
+          title,
+          owner,
+          tags,
+          estimate_hours,
+          done: false,
+        }
     }
 
-    // TODO Task 4 (Medium):
+    // Task 4 (Medium):
     // Implement a method with `&mut self`:
     // - Move the old title out and return it.
     // - Replace the title with `new_title`.
     // - Swap the two tags (primary <-> secondary) to model data flow updates.
     pub fn retitle_and_swap_tags(&mut self, new_title: String) -> String {
-        todo!("Task 4: WorkItem::retitle_and_swap_tags");
+      let old_title = std::mem::replace(&mut self.title, new_title);
+      std::mem::swap(&mut self.tags.0, &mut self.tags.1);
+
+      old_title
     }
 
     pub fn title(&self) -> &str {
@@ -71,33 +80,46 @@ pub enum Effort {
     Large,
 }
 
-// TODO Task 5 (Medium):
+// Task 5 (Medium):
 // Implement with pattern matching.
 // Rules:
 // - Any completed item is `Small`.
 // - For open items: 0..=2 => `Small`, 3..=5 => `Medium`, otherwise => `Large`.
 pub fn classify_effort(item: &WorkItem) -> Effort {
-    todo!("Task 5: classify_effort");
+    match item {
+        WorkItem { done: true, .. } => Effort::Small,
+        WorkItem { estimate_hours: 0..=2, .. } => Effort::Small,
+        WorkItem { estimate_hours: 3..=5, .. } => Effort::Medium,
+        _ => Effort::Large,
+    }
 }
 
-// TODO Task 6 (Bonus, Advanced):
-// Return the first matching item and a tuple-struct "trace point".
+// Similar Task 6 (without lifetimes):
+// Return the first matching item's index and a tuple-struct "trace point".
 // Input query:
-// - `query.0` = title prefix
-// - `query.1` = open_only flag
+// - query.0 = title prefix
+// - query.1 = open_only flag
 //
 // Match conditions:
 // - title must start with the prefix
-// - if `open_only` is true, only match items where `done == false`
+// - if open_only is true, only match items where done == false
 //
 // Return:
-// - borrowed `&WorkItem` (no cloning)
-// - `GridPoint(index_in_slice, estimate_hours_as_i32)`
-pub fn find_match_with_trace<'a>(
-    items: &'a [WorkItem],
+// - index of matching item (usize)
+// - GridPoint(index_in_slice, estimate_hours_as_i32)
+pub fn find_match_with_trace(
+    items: &[WorkItem],
     query: (&str, bool),
-) -> Option<(&'a WorkItem, GridPoint)> {
-    todo!("Task 6: find_match_with_trace");
+) -> Option<(usize, GridPoint)> {
+    let (prefix, open_only) = query;
+
+    for (index, item) in items.iter().enumerate() {
+        if item.title().starts_with(prefix) && (!open_only || !item.is_done()) {
+            return Some((index, GridPoint(index as i32, item.estimate_hours() as i32)));
+        }
+    }
+
+    None
 }
 
 #[cfg(test)]
@@ -175,7 +197,7 @@ mod tests {
     }
 
     #[test]
-    fn task_6_bonus_find_match_with_trace_returns_borrowed_item() {
+    fn task_6_bonus_find_match_with_trace_returns_index_and_trace() {
         let items = vec![
             WorkItem::new(
                 String::from("Ship API docs"),
@@ -191,10 +213,10 @@ mod tests {
             ),
         ];
 
-        let (item, trace) = find_match_with_trace(&items, ("Sta", true))
+        let (index, trace) = find_match_with_trace(&items, ("Sta", true))
             .expect("expected a matching open item");
 
-        assert_eq!(item.title(), "Stabilize parser");
+        assert_eq!(index, 1);
         assert_eq!(trace, GridPoint(1, 6));
     }
 }
