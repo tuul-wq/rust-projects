@@ -4,5 +4,6 @@ members = [
     "crates/grade-analyzer",
     "crates/ownership-lab",
     "crates/tuples-and-structs-lab",
+    "crates/ticket-workflow-lab",
 ]
 resolver = "3"

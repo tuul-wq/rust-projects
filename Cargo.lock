@@ -264,6 +264,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "ticket-workflow-lab"
+version = "0.1.0"
+
+[[package]]
 name = "tuples-and-structs-lab"
 version = "0.1.0"
 
